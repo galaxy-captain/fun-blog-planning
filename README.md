@@ -1,1 +1,1 @@
-# funny-blog-planning
+# fun-blog-planning
