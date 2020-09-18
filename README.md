@@ -1,0 +1,1 @@
+# funny-blog-planning
