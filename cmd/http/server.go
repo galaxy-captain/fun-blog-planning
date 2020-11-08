@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -20,7 +19,6 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr:      ":8443",
 		TLSConfig: tlsConfig,
 	}
 
@@ -28,8 +26,6 @@ func main() {
 		_, _ = w.Write([]byte(fmt.Sprintf("Protocol: %s", r.Proto)))
 	})
 
-	if err := server.ListenAndServeTLS("", ""); err != nil {
-		log.Fatal(err)
-	}
+	server.ListenAndServeTLS("", "")
 
 }
