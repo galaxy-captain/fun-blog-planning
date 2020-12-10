@@ -32,4 +32,5 @@ CA是颁发数字证书的权威机构，
 * [TLS 1.3 握手过程详解](https://blog.csdn.net/zk3326312/article/details/80245756)
 * [TLS 1.3 VS TLS 1.2 - 简书](https://www.jianshu.com/p/efe44d4a7501?utm_source=oschina-app)
 * [TLS Protocol v1.3 - RFC8446](https://tools.ietf.org/html/rfc8446)
+* [CA证书防御中间人攻击](https://www.sohu.com/a/376226794_100004247)
 
