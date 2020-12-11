@@ -14,22 +14,29 @@
 TLS协议是最早由网景公司(NetScape)在90年代提出的SSL协议发展而来，该协议与HTTP协议共同组成了HTTPS，有效的保证了当代互联网web传输的数据安全性。 <br>
 当前HTTPS主要使用的TLS协议包括v1.2和v1.3，其中v1.3基于DH算法实现了仅需一次请求往返开销的密钥交换逻辑，较于v1.2的两次请求往返有了明显的提升。 <br>
 #### 密钥交换过程
-下图是RFC文档中描述的TLS v1.3握手动作的过程，可见其仅需在一个RTT就可完成，并且在ServerHello之后所有的数据也同样由密钥进行了加密。
+下图是RFC文档中描述的TLS v1.3握手动作的过程，基于ECDHE算法理论，可见其仅需在一个RTT就可完成，并且在ServerHello之后所有的数据也同样由密钥进行了加密。
 ![TLS v1.3 握手过程](https://img-blog.csdnimg.cn/20201210171350692.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2R1YW54bDExMjM0,size_16,color_FFFFFF,t_70)
 1. TLS协议的握手动作由client端发起，首先client端初始化DH算法产生私钥/公钥，
 然后client端将公钥和DH算法相关参数发送至server端，server端根据client端发送的公钥和DH算法相关参数生成自身的私钥/公钥，
-最终server端将CA证书和server端公钥返回给client端，client端根据server端公钥和自身私钥计算得到"传输密钥"，同样server端根据client端公钥和自身私钥计算得到与client端相同的"传输密钥"。
+最终server端将`CA证书`和server端公钥返回给client端，client端根据server端公钥和自身私钥计算得到"传输密钥"，同样server端根据client端公钥和自身私钥计算得到与client端相同的"传输密钥"。
 ![Diffie-Hellman算法图解](https://img-blog.csdnimg.cn/20201210184748114.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2R1YW54bDExMjM0,size_16,color_FFFFFF,t_70)
 2. 后续的HTTP报文将使用"传输密钥"进行对称加密后传输。 <br>
 
 #### 中间人攻击
+中间人攻击是通过在client/server的通道中插入第三方，该第三方将自己伪装成client访问的server和向server发送请求的client，以此达到欺骗真正的client/server的目的，从而真正的client/server将数据发送到该第三方。 <br>
+这种攻击方式利用了未知数据来源的风险，当client/server无法验证数据来源就无条件信任了收到的公钥时，便为中间人提供了可乘之机。 <br>
+为了防御中间人攻击，需要提供有效的手段对数据来源进行校验。`CA证书`是由大型权威机构颁发的证明，通过ECDSA算法实现了基于私钥/公钥的数字签名认证方法，从而确保了数据来源的可靠性。
 
-## 证书颁发机构(CA, Certificate Authority)
-CA是颁发数字证书的权威机构，
+## 数字签名机制
+`CA证书`是由可信任的机构生成的含有签名公钥/私钥的信息，私钥(SigningKey)由server端进行严密的保管，公钥(VerificationKey)对外公开。
+1. 当server端将生成的公钥发送到client端时，需要使用签名私钥(SigningKey)生成签名，同时将公钥、签名、证书一起发送到client端。
+2. 在client端收到server端数据时，根据证书获取到相关
 
-## 参考内容
-* [非对称密码之DH密钥交换算法](https://blog.csdn.net/zbw18297786698/article/details/53609794)
+## 参考链接
+* [DH密钥交换算法](https://blog.csdn.net/zbw18297786698/article/details/53609794)
 * [TLS 1.3 握手过程详解](https://blog.csdn.net/zk3326312/article/details/80245756)
-* [TLS 1.3 VS TLS 1.2 - 简书](https://www.jianshu.com/p/efe44d4a7501?utm_source=oschina-app)
+* [TLS 1.3 vs TLS 1.2](https://www.jianshu.com/p/efe44d4a7501?utm_source=oschina-app)
 * [TLS Protocol v1.3 - RFC8446](https://tools.ietf.org/html/rfc8446)
+* [中间人攻击介绍](https://zh.wikipedia.org/wiki/%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB)
+* [TLS 1.3 微信团队实践](https://github.com/WeMobileDev/article/blob/master/%E5%9F%BA%E4%BA%8ETLS1.3%E7%9A%84%E5%BE%AE%E4%BF%A1%E5%AE%89%E5%85%A8%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AEmmtls%E4%BB%8B%E7%BB%8D.md)
 
